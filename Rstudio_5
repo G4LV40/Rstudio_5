@@ -1,0 +1,59 @@
+#### ANOVA - An�lise de Vari�ncia e testes de compara��es Multiplas####---------
+dados<-read.table("dados_aula_4.csv",header=TRUE)
+attach(dados)
+head(dados)
+
+#Tratamentos devem ser um termos N�O-Num�ricos
+Tratamento<-as.factor(CULTIVAR)
+modelo.linear<-lm(MASSA_SECA~ Tratamento)
+anova(modelo.linear)
+
+
+#Resumo da Anova teste F para tratamentos
+summary(modelo.linear)
+
+# acessando pacotes para compara��es entre tratamentos
+library(ExpDes.pt)
+
+#Considerando um DIC com 5% de signific�ncia, temos que 
+
+dic(Tratamento, MASSA_SECA, quali = TRUE, mcomp = "tukey", nl = FALSE,
+    hvar='bartlett', sigT = 0.05, sigF = 0.05)
+
+
+# A an�lise de variancia sugeria diferen�a a 10%, logo
+
+dic(Tratamento, MASSA_SECA, quali = TRUE, mcomp = "tukey", nl = FALSE,
+    hvar='bartlett', sigT = 0.10, sigF = 0.10)
+
+#### Considerando que Repeti��es s�o Blocos (Controle Local)--------------------
+
+Blocos<-dados$REP
+is.numeric(Blocos)
+
+# Blocos s�o faotres de controle varia��o
+Blocos<-as.factor(dados$REP)
+Y<-ALTURA
+anova(lm(Y~Tratamento+Blocos))
+
+#Neste caso temos blocos n�o significativos e Tratamentos significativos < 1%
+
+dbc(Tratamento, Blocos, Y, quali = TRUE, mcomp = "tukey", nl=FALSE,
+    hvar='oneillmathews', sigT = 0.05, sigF = 0.05)
+
+##------------- Scott-Knott-------------------------------##
+
+dbc(Tratamento, Blocos, Y, quali = TRUE, mcomp = "sk", nl=FALSE,
+    hvar='oneillmathews', sigT = 0.05, sigF = 0.05)
+
+##------------- SNK----------------------------------------##
+
+dbc(Tratamento, Blocos, Y, quali = TRUE, mcomp = "snk", nl=FALSE,
+    hvar='oneillmathews', sigT = 0.05, sigF = 0.05)
+
+##------------- Duncan-------------------------------------##
+
+dbc(Tratamento, Blocos, Y, quali = TRUE, mcomp = "duncan", nl=FALSE,
+    hvar='oneillmathews', sigT = 0.05, sigF = 0.05)
+
+
